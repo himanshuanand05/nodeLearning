@@ -13,7 +13,20 @@ app.use(bodyParser.json());
 
 app.post('/', function (req, res, next) {
     getRecordsByDateRangeAndCountSum(req.body)
-        .then(result=>res.json(result))
-        .catch(err=>next(err))
+        .then(result=>res.json(
+            {
+                code:0,
+                msg:"Success",
+                records:result
+            }
+            )
+        )
+        .catch(err=>{
+            next({code:1,
+                msg:err})
+            }
+        )
+        
+
 })
 

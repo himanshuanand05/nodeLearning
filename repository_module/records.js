@@ -22,7 +22,7 @@ function getRecordsByDateRangeAndCountSum(data) {
                     }
                 },
                 {
-                    $addFields: {
+                    $adsddFields: {
                         totalCount: { $sum: "$counts" }
                     }
                 },
