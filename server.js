@@ -11,7 +11,9 @@ app.listen(process.env.PORT, () => {
 
 //get body data as json
 app.use(bodyParser.json());
-
+app.get('/', function (req, res) {
+    res.send("Hello")
+})
 app.post('/', function (req, res, next) {
     getRecordsByDateRangeAndCountSum(req.body)
         .then(result=>res.json(
