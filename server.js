@@ -1,11 +1,12 @@
 import express from "express"
 import bodyParser from "body-parser";
-
+import dotenv from 'dotenv';
 import { getRecordsByDateRangeAndCountSum } from "./repository_module/records.js"
 
+dotenv.config();
 const app = express();
-app.listen(3000, () => {
-    console.log("Started server on 3000");
+app.listen(process.env.PORT, () => {
+    console.log("Started server on "+process.env.PORT);
 });
 
 //get body data as json
