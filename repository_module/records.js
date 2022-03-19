@@ -4,6 +4,14 @@ export {
     getRecordsByDateRangeAndCountSum
 }
 
+/** 
+ * Gets the filtered result from data store.
+ * Filter criteria works for a date range <startDate(exclusive) & endDate(exclusive)> and count as totalCount 
+ * <minCount(exclusive) & maxCount(exclusive)>. Since count field is an Array[numbers] so minCount & maxCount 
+ * compares on summation of Array elements.
+ * @param data This is an object type parameter having object keys startDate, endDate, minCount and maxCount.
+ * @returns A Promise for the completion of the data fetch query. If successful returns records array.
+ */
 function getRecordsByDateRangeAndCountSum(data) {
     return new Promise((resolve, reject)=>{
         MongoClient.MongoClient.connect(process.env.CONNECTION_URI, function(err, db){
@@ -12,6 +20,7 @@ function getRecordsByDateRangeAndCountSum(data) {
                 return reject(err);
             }
             let dbo = db.db(process.env.DB_NAME);
+            //query to fetch record on createdAt and count
             let query = [
                 {
                     $match: {
