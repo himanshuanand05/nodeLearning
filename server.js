@@ -6,28 +6,36 @@ import { getRecordsByDateRangeAndCountSum } from "./repository_module/records.js
 dotenv.config();
 const app = express();
 app.listen(process.env.PORT, () => {
-    console.log("Started server on "+process.env.PORT);
+    console.log("Started server on " + process.env.PORT);
 });
 
 //get body data as json
 app.use(bodyParser.json());
 
-app.post('/', function (req, res, next) {
-    getRecordsByDateRangeAndCountSum(req.body)
-        .then(result=>res.json(
-            {
-                code:0,
-                msg:"Success",
-                records:result
+app.post('/', function (req, res) {
+    try {
+        if (!req.body.startDate || !req.body.endDate || !req.body.minCount || !req.body.maxCount) throw new Error("Params missing.");
+        getRecordsByDateRangeAndCountSum(req.body)
+            .then(result => res.json(
+                {
+                    code: 0,
+                    msg: "Success",
+                    records: result
+                }
+            )
+            )
+            .catch(err => {
+                res.status(500).json({
+                    code: err.code,
+                    msg: err.message
+                })
             }
             )
-        )
-        .catch(err=>{
-            next({code:1,
-                msg:err})
-            }
-        )
-        
-
+    } catch (err) {
+        res.status(400).json({
+            code: 1,
+            msg: err.message
+        })
+    }
 })
 

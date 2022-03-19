@@ -7,7 +7,10 @@ export {
 function getRecordsByDateRangeAndCountSum(data) {
     return new Promise((resolve, reject)=>{
         MongoClient.MongoClient.connect(process.env.CONNECTION_URI, function(err, db){
-            if(err) reject(err);
+            if(err) {
+                err.code = 2
+                return reject(err);
+            }
             let dbo = db.db(process.env.DB_NAME);
             let query = [
                 {
@@ -37,9 +40,12 @@ function getRecordsByDateRangeAndCountSum(data) {
             ]
 
             dbo.collection("records").aggregate(query).toArray(function (err, result) {
-                if (err) reject(err);
+                if (err) {
+                    err.code = 3;
+                    return reject(err);
+                }
                 db.close();
-                resolve(result);
+                return resolve(result);
             });
         })
     })
