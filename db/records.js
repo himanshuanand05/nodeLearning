@@ -1,4 +1,5 @@
-import MongoClient from 'mongodb';
+import { MongoClient } from 'mongodb';
+import { getRecordsByDateRangeAndCountSumModel } from "./modals/getRecordsByDateRangeAndCountSumModel.js"
 
 export {
     getRecordsByDateRangeAndCountSum
@@ -13,49 +14,27 @@ export {
  * @returns A Promise for the completion of the data fetch query. If successful returns records array.
  */
 function getRecordsByDateRangeAndCountSum(data) {
-    return new Promise((resolve, reject)=>{
-        MongoClient.MongoClient.connect(process.env.CONNECTION_URI, function(err, db){
-            if(err) {
+    return new Promise((resolve, reject) => {
+        MongoClient.connect(process.env.CONNECTION_URI, function (err, db) {
+            if (err) {
                 err.code = 2
                 return reject(err);
             }
-            let dbo = db.db(process.env.DB_NAME);
-            //query to fetch record on createdAt and count
-            let query = [
-                {
-                    $match: {
-                        $and: [
-                            { createdAt: { $gt: new Date(data.startDate) } },
-                            { createdAt: { $lt: new Date(data.endDate) } }
-                        ]
+            try {
+                let dbo = db.db(process.env.DB_NAME);
+                dbo.collection("records").aggregate(new getRecordsByDateRangeAndCountSumModel(data).query).toArray(function (err, result) {
+                    if (err) {
+                        err.code = 3;
+                        return reject(err);
                     }
-                },
-                {
-                    $addFields: {
-                        totalCount: { $sum: "$counts" }
-                    }
-                },
-                {
-                    $match: {
-                        $and: [
-                            { totalCount: { $gt: data.minCount} },
-                            { totalCount: { $lt: data.maxCount} }
-                        ]
-                    }
-                },
-                {
-                    $unset: ["value", "counts", "_id"]
-                }
-            ]
+                    db.close();
+                    return resolve(result);
+                });
+            } catch (err) {
+                err.code = 4;
+                return reject(err);
+            }
 
-            dbo.collection("records").aggregate(query).toArray(function (err, result) {
-                if (err) {
-                    err.code = 3;
-                    return reject(err);
-                }
-                db.close();
-                return resolve(result);
-            });
         })
     })
 }
