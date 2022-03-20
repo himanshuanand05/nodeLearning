@@ -1,7 +1,7 @@
 import express from "express"
 import bodyParser from "body-parser";
 import dotenv from 'dotenv';
-import { getRecordsByDateRangeAndCountSum } from "./repository_module/records.js"
+import { getRecordsByDateRangeAndCountSum } from "./db/records.js.js"
 
 dotenv.config();
 const app = express();
@@ -39,3 +39,6 @@ app.post('/', function (req, res) {
     }
 })
 
+export { 
+    app
+}
