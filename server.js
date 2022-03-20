@@ -1,7 +1,7 @@
 import express from "express"
 import bodyParser from "body-parser";
 import dotenv from 'dotenv';
-import { getRecordsByDateRangeAndCountSum } from "./db/records.js.js"
+import { getRecordsByDateRangeAndCountSum } from "./db/records.js"
 
 dotenv.config();
 const app = express();
@@ -14,7 +14,6 @@ app.use(bodyParser.json());
 
 app.post('/', function (req, res) {
     try {
-        if (!req.body.startDate || !req.body.endDate || !req.body.minCount || !req.body.maxCount) throw new Error("Params missing.");
         getRecordsByDateRangeAndCountSum(req.body)
             .then(result => res.json(
                 {
@@ -39,6 +38,6 @@ app.post('/', function (req, res) {
     }
 })
 
-export { 
+export {
     app
 }
